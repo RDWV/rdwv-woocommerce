@@ -1,17 +1,17 @@
 <?php
 
 /*
-Plugin Name: Bitcart for WooCommerce
-Plugin URI:  https://wordpress.org/plugins/bitcart-for-woocommerce
-Description: Enable your WooCommerce store to accept cryptocurrencies with Bitcart.
-Author:      Bitcart
-Text Domain: Bitcart
-Author URI:  https://github.com/bitcart
+Plugin Name: RDWV for WooCommerce
+Plugin URI:  https://wordpress.org/plugins/rdwv-for-woocommerce
+Description: Enable your WooCommerce store to accept cryptocurrencies with RDWV.
+Author:      RDWV
+Text Domain: RDWV
+Author URI:  https://github.com/rdwv
 
 Version:           1.0.6
-License:           Copyright 2018-2020 Bitcart, MIT License
-License URI:       https://github.com/bitcart/bitcart-woocommerce/blob/master/LICENSE
-GitHub Plugin URI: https://github.com/bitcart/bitcart-woocommerce
+License:           Copyright 2018-2020 RDWV, MIT License
+License URI:       https://github.com/rdwv/rdwv-woocommerce/blob/master/LICENSE
+GitHub Plugin URI: https://github.com/rdwv/rdwv-woocommerce
  */
 
 // Exit if accessed directly
@@ -19,15 +19,15 @@ if (false === defined('ABSPATH')) {
     exit();
 }
 
-define("BITCART_VERSION", "1.0.6");
+define("RDWV_VERSION", "1.0.6");
 
-// Ensures WooCommerce is loaded before initializing the Bitcart plugin
-add_action('plugins_loaded', 'woocommerce_bitcart_init', 0);
-register_activation_hook(__FILE__, 'woocommerce_bitcart_activate');
+// Ensures WooCommerce is loaded before initializing the RDWV plugin
+add_action('plugins_loaded', 'woocommerce_rdwv_init', 0);
+register_activation_hook(__FILE__, 'woocommerce_rdwv_activate');
 
-function woocommerce_bitcart_init()
+function woocommerce_rdwv_init()
 {
-    if (true === class_exists('WC_Gateway_Bitcart')) {
+    if (true === class_exists('WC_Gateway_RDWV')) {
         return;
     }
 
@@ -35,7 +35,7 @@ function woocommerce_bitcart_init()
         return;
     }
 
-    class WC_Gateway_Bitcart extends WC_Payment_Gateway
+    class WC_Gateway_RDWV extends WC_Payment_Gateway
     {
         private $is_initialized = false;
 
@@ -45,14 +45,14 @@ function woocommerce_bitcart_init()
         public function __construct()
         {
             // General
-            $this->id = 'bitcart';
+            $this->id = 'rdwv';
             $this->enabled = $this->get_option( 'enabled' );
             $this->icon = plugin_dir_url(__FILE__) . 'assets/img/icon.png';
             $this->has_fields = false;
-            $this->order_button_text = __('Proceed to Bitcart', 'bitcart');
-            $this->method_title = 'Bitcart';
+            $this->order_button_text = __('Proceed to RDWV', 'rdwv');
+            $this->method_title = 'RDWV';
             $this->method_description =
-                'Bitcart allows you to accept cryptocurrency payments on your WooCommerce store.';
+                'RDWV allows you to accept cryptocurrency payments on your WooCommerce store.';
 
             // Load the settings.
             $this->init_form_fields();
@@ -63,17 +63,17 @@ function woocommerce_bitcart_init()
             $this->description = $this->get_option('description');
             $this->debug = 'yes' === $this->get_option('debug', 'no');
 
-            // Define Bitcart settings
+            // Define RDWV settings
             $this->api_url = $this->get_option('api_url');
             $this->store_id = $this->get_option('store_id');
             $this->admin_url = $this->get_option('admin_url');
 
             // Define debugging & informational settings
             $this->debug_php_version = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
-            $this->debug_plugin_version = constant("BITCART_VERSION");
+            $this->debug_plugin_version = constant("RDWV_VERSION");
 
             $this->log(
-                'Bitcart Woocommerce payment plugin object constructor called. Plugin is v' .
+                'RDWV Woocommerce payment plugin object constructor called. Plugin is v' .
                 $this->debug_plugin_version .
                 ' and server is PHP v' .
                 $this->debug_php_version
@@ -91,7 +91,7 @@ function woocommerce_bitcart_init()
             if ($this->enabled === 'yes') {
                 if ($this->is_valid_for_use()) {
                     $this->log('    [Info] The plugin is valid to use.');
-                    add_action('woocommerce_api_wc_gateway_bitcart', array(
+                    add_action('woocommerce_api_wc_gateway_rdwv', array(
                         $this,
                         'ipn_callback',
                     ));
@@ -105,7 +105,7 @@ function woocommerce_bitcart_init()
             $this->is_initialized = true;
         }
 
-        public function is_bitcart_payment_method($order)
+        public function is_rdwv_payment_method($order)
         {
             $actualMethod = '';
             if (method_exists($order, 'get_payment_method')) {
@@ -117,7 +117,7 @@ function woocommerce_bitcart_init()
                     true
                 );
             }
-            return $actualMethod === 'bitcart';
+            return $actualMethod === 'rdwv';
         }
 
         public function __destruct()
@@ -146,7 +146,7 @@ function woocommerce_bitcart_init()
         {
             $this->log('    [Info] Entered init_form_fields()...');
             $log_file =
-            'bitcart-' . sanitize_file_name(wp_hash('bitcart')) . '-log';
+            'rdwv-' . sanitize_file_name(wp_hash('rdwv')) . '-log';
             $logs_href =
                 get_bloginfo('wpurl') .
                 '/wp-admin/admin.php?page=wc-status&tab=logs&log_file=' .
@@ -154,110 +154,110 @@ function woocommerce_bitcart_init()
 
             $this->form_fields = array(
                 'enabled' => array(
-					'title' => __('Enable/Disable', 'bitcart'),
+					'title' => __('Enable/Disable', 'rdwv'),
 					'type' => 'checkbox',
-					'label' => __('Enable Bitcart payment gateway', 'bitcart'),
+					'label' => __('Enable RDWV payment gateway', 'rdwv'),
 					'default' => 'false',
 				),
                 'title' => array(
-                    'title' => __('Title', 'bitcart'),
+                    'title' => __('Title', 'rdwv'),
                     'type' => 'text',
                     'description' => __(
                         'Controls the name of this payment method as displayed to the customer during checkout.',
-                        'bitcart'
+                        'rdwv'
                     ),
-                    'default' => __('Bitcoin', 'bitcart'),
+                    'default' => __('Bitcoin', 'rdwv'),
                     'desc_tip' => true,
                 ),
                 'description' => array(
-                    'title' => __('Customer Message', 'bitcart'),
+                    'title' => __('Customer Message', 'rdwv'),
                     'type' => 'textarea',
                     'description' => __(
                         'Message to explain how the customer will be paying for the purchase.',
-                        'bitcart'
+                        'rdwv'
                     ),
                     'default' =>
-                    'You will be redirected to Bitcart to complete your purchase.',
+                    'You will be redirected to RDWV to complete your purchase.',
                     'desc_tip' => true,
                 ),
                 'api_url' => array(
-                    'title' => __('Bitcart API URL', 'bitcart'),
+                    'title' => __('RDWV API URL', 'rdwv'),
                     'type' => 'url',
                     'description' => __(
-                        'The API URL of your Bitcart instance',
-                        'bitcart'
+                        'The API URL of your RDWV instance',
+                        'rdwv'
                     ),
                     'desc_tip' => true,
                 ),
                 'store_id' => array(
-                    'title' => __('Bitcart Store ID', 'bitcart'),
+                    'title' => __('RDWV Store ID', 'rdwv'),
                     'type' => 'text',
                     'description' => __(
                         'The ID of the store used for checkout',
-                        'bitcart'
+                        'rdwv'
                     ),
                     'desc_tip' => true,
                 ),
                 'admin_url' => array(
-                    'title' => __('Bitcart Admin Panel URL', 'bitcart'),
+                    'title' => __('RDWV Admin Panel URL', 'rdwv'),
                     'type' => 'url',
                     'description' => __(
                         'The URL of your admin panel, used for checkout',
-                        'bitcart'
+                        'rdwv'
                     ),
                     'desc_tip' => true,
                 ),
                 'debug' => array(
-                    'title' => __('Debug Log', 'bitcart'),
+                    'title' => __('Debug Log', 'rdwv'),
                     'type' => 'checkbox',
                     'label' => sprintf(
                         __(
                             'Enable logging <a href="%s" class="button">View Logs</a>',
-                            'bitcart'
+                            'rdwv'
                         ),
                         $logs_href
                     ),
                     'default' => 'no',
                     'description' => sprintf(
                         __(
-                            'Log Bitcart events, such as IPN requests, inside <code>%s</code>',
-                            'bitcart'
+                            'Log RDWV events, such as IPN requests, inside <code>%s</code>',
+                            'rdwv'
                         ),
-                        wc_get_log_file_path('bitcart')
+                        wc_get_log_file_path('rdwv')
                     ),
                     'desc_tip' => true,
                 ),
                 'notification_url' => array(
-                    'title' => __('Notification URL', 'bitcart'),
+                    'title' => __('Notification URL', 'rdwv'),
                     'type' => 'url',
                     'description' => __(
-                        'Bitcart will send IPNs for orders to this URL with the Bitcart invoice data',
-                        'bitcart'
+                        'RDWV will send IPNs for orders to this URL with the RDWV invoice data',
+                        'rdwv'
                     ),
                     'default' => '',
-                    'placeholder' => WC()->api_request_url('WC_Gateway_Bitcart'),
+                    'placeholder' => WC()->api_request_url('WC_Gateway_RDWV'),
                     'desc_tip' => true,
                 ),
                 'redirect_url' => array(
-                    'title' => __('Redirect URL', 'bitcart'),
+                    'title' => __('Redirect URL', 'rdwv'),
                     'type' => 'url',
                     'description' => __(
-                        'After paying the Bitcart invoice, users will be redirected back to this URL',
-                        'bitcart'
+                        'After paying the RDWV invoice, users will be redirected back to this URL',
+                        'rdwv'
                     ),
                     'default' => '',
                     'placeholder' => $this->get_return_url(),
                     'desc_tip' => true,
                 ),
                 'support_details' => array(
-                    'title' => __('Plugin & Support Information', 'bitcart'),
+                    'title' => __('Plugin & Support Information', 'rdwv'),
                     'type' => 'title',
                     'description' => sprintf(
                         __(
-                            'This plugin version is %s and your PHP version is %s. If you need assistance, please join our telegram https://t.me/bitcart.  Thank you for using Bitcart!',
-                            'bitcart'
+                            'This plugin version is %s and your PHP version is %s. If you need assistance, please join our telegram https://t.me/rdwv.  Thank you for using RDWV!',
+                            'rdwv'
                         ),
-                        constant("BITCART_VERSION"),
+                        constant("RDWV_VERSION"),
                         PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION
                     ),
                 ),
@@ -276,9 +276,9 @@ function woocommerce_bitcart_init()
         public function validate_notification_url_field()
         {
             $notification_url = $this->get_option('notification_url', '');
-            if (isset($_POST['woocommerce_bitcart_notification_url'])) {
+            if (isset($_POST['woocommerce_rdwv_notification_url'])) {
                 $got_url = esc_url_raw(
-                    $_POST['woocommerce_bitcart_notification_url']
+                    $_POST['woocommerce_rdwv_notification_url']
                 );
                 if (filter_var($got_url, FILTER_VALIDATE_URL) !== false) {
                     $notification_url = $got_url;
@@ -295,8 +295,8 @@ function woocommerce_bitcart_init()
         public function validate_redirect_url_field()
         {
             $redirect_url = $this->get_option('redirect_url', '');
-            if (isset($_POST['woocommerce_bitcart_redirect_url'])) {
-                $got_url = esc_url_raw($_POST['woocommerce_bitcart_redirect_url']);
+            if (isset($_POST['woocommerce_rdwv_redirect_url'])) {
+                $got_url = esc_url_raw($_POST['woocommerce_rdwv_redirect_url']);
                 if (filter_var($got_url, FILTER_VALIDATE_URL) !== false) {
                     $redirect_url = $got_url;
                 } else {
@@ -325,11 +325,11 @@ function woocommerce_bitcart_init()
             );
         }
 
-        public function get_bitcart_redirect($order_id)
+        public function get_rdwv_redirect($order_id)
         {
-            $redirect = get_post_meta($order_id, 'Bitcart_redirect', true);
+            $redirect = get_post_meta($order_id, 'RDWV_redirect', true);
             if ($redirect) {
-                $invoice_id = get_post_meta($order_id, 'Bitcart_id', true);
+                $invoice_id = get_post_meta($order_id, 'RDWV_id', true);
                 $invoice = json_decode($this->get_invoice($invoice_id));
                 if (!property_exists($invoice, 'id')) {
                     return null;
@@ -386,18 +386,18 @@ function woocommerce_bitcart_init()
 
             if (true === empty($this->store_id)) {
                 $this->log(
-                    '    [Error] The Bitcart payment plugin was called to process a payment but could not set this->store_id. The empty() check failed!'
+                    '    [Error] The RDWV payment plugin was called to process a payment but could not set this->store_id. The empty() check failed!'
                 );
                 throw new \Exception(
-                    ' The Bitcart payment plugin was called to process a payment but could not set this->store_id. The empty() check failed!'
+                    ' The RDWV payment plugin was called to process a payment but could not set this->store_id. The empty() check failed!'
                 );
             }
             if (true === empty($this->admin_url)) {
                 $this->log(
-                    '    [Error] The Bitcart payment plugin was called to process a payment but could not set this->admin_url. The empty() check failed!'
+                    '    [Error] The RDWV payment plugin was called to process a payment but could not set this->admin_url. The empty() check failed!'
                 );
                 throw new \Exception(
-                    ' The Bitcart payment plugin was called to process a payment but could not set this->admin_url. The empty() check failed!'
+                    ' The RDWV payment plugin was called to process a payment but could not set this->admin_url. The empty() check failed!'
                 );
             }
             return $url;
@@ -419,10 +419,10 @@ function woocommerce_bitcart_init()
 
             if (true === empty($order_id)) {
                 $this->log(
-                    '    [Error] The Bitcart payment plugin was called to process a payment but the order_id was missing.'
+                    '    [Error] The RDWV payment plugin was called to process a payment but the order_id was missing.'
                 );
                 throw new \Exception(
-                    'The Bitcart payment plugin was called to process a payment but the order_id was missing. Cannot continue!'
+                    'The RDWV payment plugin was called to process a payment but the order_id was missing. Cannot continue!'
                 );
             }
 
@@ -430,11 +430,11 @@ function woocommerce_bitcart_init()
 
             if (false === $order) {
                 $this->log(
-                    '    [Error] The Bitcart payment plugin was called to process a payment but could not retrieve the order details for order_id ' .
+                    '    [Error] The RDWV payment plugin was called to process a payment but could not retrieve the order details for order_id ' .
                     $order_id
                 );
                 throw new \Exception(
-                    'The Bitcart payment plugin was called to process a payment but could not retrieve the order details for order_id ' .
+                    'The RDWV payment plugin was called to process a payment but could not retrieve the order details for order_id ' .
                     $order_id .
                     '. Cannot continue!'
                 );
@@ -442,7 +442,7 @@ function woocommerce_bitcart_init()
 
             $notification_url = $this->get_option(
                 'notification_url',
-                WC()->api_request_url('WC_Gateway_Bitcart')
+                WC()->api_request_url('WC_Gateway_RDWV')
             );
             $this->log(
                 '    [Info] Generating payment form for order ' .
@@ -501,11 +501,11 @@ function woocommerce_bitcart_init()
 
             $url = $this->perform_checks();
 
-            $redirect = $this->get_bitcart_redirect($order_id);
+            $redirect = $this->get_rdwv_redirect($order_id);
 
             if ($redirect) {
                 $this->log(
-                    '    [Info] Existing Bitcart invoice has already been created, redirecting to it...'
+                    '    [Info] Existing RDWV invoice has already been created, redirecting to it...'
                 );
                 $this->log('    [Info] Leaving process_payment()...');
                 return array(
@@ -541,10 +541,10 @@ function woocommerce_bitcart_init()
 
                 if (false === isset($invoice) || true === empty($invoice)) {
                     $this->log(
-                        '    [Error] The Bitcart payment plugin was called to process a payment but could not instantiate an invoice object.'
+                        '    [Error] The RDWV payment plugin was called to process a payment but could not instantiate an invoice object.'
                     );
                     throw new \Exception(
-                        'The Bitcart payment plugin was called to process a payment but could not instantiate an invoice object. Cannot continue!'
+                        'The RDWV payment plugin was called to process a payment but could not instantiate an invoice object. Cannot continue!'
                     );
                 } else {
                     $this->log('    [Info] Call to generate invoice was successful.');
@@ -562,17 +562,17 @@ function woocommerce_bitcart_init()
                 return array(
                     'result' => 'success',
                     'messages' =>
-                    'Sorry, but checkout with Bitcart does not appear to be working.',
+                    'Sorry, but checkout with RDWV does not appear to be working.',
                 );
             }
 
             $responseData = json_decode($invoice);
 
-            // If another Bitcart invoice was created before, returns the original one
-            $redirect = $this->get_bitcart_redirect($order_id);
+            // If another RDWV invoice was created before, returns the original one
+            $redirect = $this->get_rdwv_redirect($order_id);
             if ($redirect) {
                 $this->log(
-                    '    [Info] Existing Bitcart invoice has already been created, redirecting to it...'
+                    '    [Info] Existing RDWV invoice has already been created, redirecting to it...'
                 );
                 $this->log('    [Info] Leaving process_payment()...');
                 return array(
@@ -583,10 +583,10 @@ function woocommerce_bitcart_init()
 
             update_post_meta(
                 $order_id,
-                'Bitcart_redirect',
+                'RDWV_redirect',
                 $this->get_invoice_url($responseData->id)
             );
-            update_post_meta($order_id, 'Bitcart_id', $responseData->id);
+            update_post_meta($order_id, 'RDWV_id', $responseData->id);
 
             // Reduce stock levels
             if (function_exists('wc_reduce_stock_levels')) {
@@ -595,10 +595,10 @@ function woocommerce_bitcart_init()
                 $order->reduce_order_stock();
             }
 
-            $this->log('    [Info] Bitcart invoice assigned ' . $responseData->id);
+            $this->log('    [Info] RDWV invoice assigned ' . $responseData->id);
             $this->log('    [Info] Leaving process_payment()...');
 
-            // Redirect the customer to the Bitcart invoice
+            // Redirect the customer to the RDWV invoice
             return array(
                 'result' => 'success',
                 'redirect' => $this->get_invoice_url($responseData->id),
@@ -614,7 +614,7 @@ function woocommerce_bitcart_init()
             if (true === empty($post)) {
                 $this->log('    [Error] No post data sent to IPN handler!');
                 error_log(
-                    '[Error] Bitcart plugin received empty POST data for an IPN message.'
+                    '[Error] RDWV plugin received empty POST data for an IPN message.'
                 );
 
                 wp_die('No post data');
@@ -631,7 +631,7 @@ function woocommerce_bitcart_init()
                     '    [Error] Invalid JSON payload sent to IPN handler: ' . $post
                 );
                 error_log(
-                    '[Error] Bitcart plugin received an invalid JSON payload sent to IPN handler: ' .
+                    '[Error] RDWV plugin received an invalid JSON payload sent to IPN handler: ' .
                     $post
                 );
 
@@ -646,7 +646,7 @@ function woocommerce_bitcart_init()
                     var_export($json, true)
                 );
                 error_log(
-                    '[Error] Bitcart plugin did not receive an invoice ID present in JSON payload: ' .
+                    '[Error] RDWV plugin did not receive an invoice ID present in JSON payload: ' .
                     var_export($json, true)
                 );
 
@@ -661,7 +661,7 @@ function woocommerce_bitcart_init()
                     var_export($json, true)
                 );
                 error_log(
-                    '[Error] Bitcart plugin did not receive an invoice status present in JSON payload: ' .
+                    '[Error] RDWV plugin did not receive an invoice status present in JSON payload: ' .
                     var_export($json, true)
                 );
 
@@ -698,10 +698,10 @@ function woocommerce_bitcart_init()
 
             if (false === isset($order_id) && true === empty($order_id)) {
                 $this->log(
-                    '    [Error] The Bitcart payment plugin was called to process an IPN message but could not obtain the order ID from the invoice.'
+                    '    [Error] The RDWV payment plugin was called to process an IPN message but could not obtain the order ID from the invoice.'
                 );
                 throw new \Exception(
-                    'The Bitcart payment plugin was called to process an IPN message but could not obtain the order ID from the invoice. Cannot continue!'
+                    'The RDWV payment plugin was called to process an IPN message but could not obtain the order ID from the invoice. Cannot continue!'
                 );
             } else {
                 $this->log('    [Info] Order ID is: ' . $order_id);
@@ -718,12 +718,12 @@ function woocommerce_bitcart_init()
 
             if (false === $order) {
                 $this->log(
-                    '    [Error] The Bitcart payment plugin was called to process an IPN message but could not retrieve the order details for order_id: "' .
+                    '    [Error] The RDWV payment plugin was called to process an IPN message but could not retrieve the order details for order_id: "' .
                     $order_id .
-                    '". If you use an alternative order numbering system, please see class-wc-gateway-bitcart.php to apply a search filter.'
+                    '". If you use an alternative order numbering system, please see class-wc-gateway-rdwv.php to apply a search filter.'
                 );
                 throw new \Exception(
-                    'The Bitcart payment plugin was called to process an IPN message but could not retrieve the order details for order_id ' .
+                    'The RDWV payment plugin was called to process an IPN message but could not retrieve the order details for order_id ' .
                     $order_id .
                     '. Cannot continue!'
                 );
@@ -731,15 +731,15 @@ function woocommerce_bitcart_init()
                 $this->log('    [Info] Order details retrieved successfully...');
             }
 
-            if (!$this->is_bitcart_payment_method($order)) {
-                $this->log('    [Info] Not using bitcart payment method...');
+            if (!$this->is_rdwv_payment_method($order)) {
+                $this->log('    [Info] Not using rdwv payment method...');
                 $this->log('    [Info] Leaving ipn_callback()...');
                 return;
             }
 
             $expected_invoiceId = get_post_meta(
                 $order_id,
-                'Bitcart_id',
+                'RDWV_id',
                 true
             );
 
@@ -757,17 +757,17 @@ function woocommerce_bitcart_init()
                 $this->log(
                     '    [Error] Received IPN for order ' .
                     $order_id .
-                    ' with Bitcart invoice id ' .
+                    ' with RDWV invoice id ' .
                     $json['id'] .
-                    ' while expected Bitcart invoice is ' .
+                    ' while expected RDWV invoice is ' .
                     $expected_invoiceId
                 );
                 throw new \Exception(
                     'Received IPN for order ' .
                     $order_id .
-                    ' with Bitcart invoice id ' .
+                    ' with RDWV invoice id ' .
                     $json['id'] .
-                    ' while expected Bitcart invoice is ' .
+                    ' while expected RDWV invoice is ' .
                     $expected_invoiceId
                 );
             }
@@ -776,10 +776,10 @@ function woocommerce_bitcart_init()
 
             if (false === isset($current_status) || true === empty($current_status)) {
                 $this->log(
-                    '    [Error] The Bitcart payment plugin was called to process an IPN message but could not obtain the current status from the order.'
+                    '    [Error] The RDWV payment plugin was called to process an IPN message but could not obtain the current status from the order.'
                 );
                 throw new \Exception(
-                    'The Bitcart payment plugin was called to process an IPN message but could not obtain the current status from the order. Cannot continue!'
+                    'The RDWV payment plugin was called to process an IPN message but could not obtain the current status from the order. Cannot continue!'
                 );
             } else {
                 $this->log(
@@ -792,10 +792,10 @@ function woocommerce_bitcart_init()
 
             if (false === isset($checkStatus) && true === empty($checkStatus)) {
                 $this->log(
-                    '    [Error] The Bitcart payment plugin was called to process an IPN message but could not obtain the current status from the invoice.'
+                    '    [Error] The RDWV payment plugin was called to process an IPN message but could not obtain the current status from the invoice.'
                 );
                 throw new \Exception(
-                    'The Bitcart payment plugin was called to process an IPN message but could not obtain the current status from the invoice. Cannot continue!'
+                    'The RDWV payment plugin was called to process an IPN message but could not obtain the current status from the invoice. Cannot continue!'
                 );
             } else {
                 $this->log(
@@ -813,8 +813,8 @@ function woocommerce_bitcart_init()
                     $order->update_status('wc-processing');
                     $order->add_order_note(
                         __(
-                            'Bitcart invoice payment completed. Payment credited to your merchant account.',
-                            'bitcart'
+                            'RDWV invoice payment completed. Payment credited to your merchant account.',
+                            'rdwv'
                         )
                     );
                     break;
@@ -830,7 +830,7 @@ function woocommerce_bitcart_init()
                         'wc-failed',
                         __(
                             'Cryptocurrency payment is invalid for this order! The payment was not confirmed by the network within on time. Do not ship the product for this order!',
-                            'bitcart'
+                            'rdwv'
                         )
                     );
                     break;
@@ -849,7 +849,7 @@ function woocommerce_bitcart_init()
                         'wc-cancelled',
                         __(
                             'Cryptocurrency payment has expired for this order! The payment was not broadcasted before its expiration. Do not ship the product for this order!',
-                            'bitcart'
+                            'rdwv'
                         )
                     );
                     wc_increase_stock_levels($order_id);
@@ -873,35 +873,35 @@ function woocommerce_bitcart_init()
                     $this->logger = new WC_Logger();
                 }
 
-                $this->logger->add('bitcart', $message);
+                $this->logger->add('rdwv', $message);
             }
         }
     }
     /**
-     * Add Bitcart Payment Gateway to WooCommerce
+     * Add RDWV Payment Gateway to WooCommerce
      **/
-    function wc_add_bitcart($methods)
+    function wc_add_rdwv($methods)
     {
-        $methods[] = 'WC_Gateway_Bitcart';
+        $methods[] = 'WC_Gateway_RDWV';
 
         return $methods;
     }
 
-    add_filter('woocommerce_payment_gateways', 'wc_add_bitcart');
+    add_filter('woocommerce_payment_gateways', 'wc_add_rdwv');
 
-    if (!function_exists('bitcart_log')) {
-        function bitcart_log($message)
+    if (!function_exists('rdwv_log')) {
+        function rdwv_log($message)
         {
             $logger = new WC_Logger();
-            $logger->add('bitcart', $message);
+            $logger->add('rdwv', $message);
         }
     }
     /**
      * Add Settings link to the plugin entry in the plugins menu
      **/
-    add_filter('plugin_action_links', 'bitcart_plugin_action_links', 10, 2);
+    add_filter('plugin_action_links', 'rdwv_plugin_action_links', 10, 2);
 
-    function bitcart_plugin_action_links($links, $file)
+    function rdwv_plugin_action_links($links, $file)
     {
         static $this_plugin;
 
@@ -911,11 +911,11 @@ function woocommerce_bitcart_init()
 
         if ($file == $this_plugin) {
             $log_file =
-            'bitcart-' . sanitize_file_name(wp_hash('bitcart')) . '-log';
+            'rdwv-' . sanitize_file_name(wp_hash('rdwv')) . '-log';
             $settings_link =
             '<a href="' .
             get_bloginfo('wpurl') .
-                '/wp-admin/admin.php?page=wc-settings&tab=checkout&section=wc_gateway_bitcart">Settings</a>';
+                '/wp-admin/admin.php?page=wc-settings&tab=checkout&section=wc_gateway_rdwv">Settings</a>';
             $logs_link =
             '<a href="' .
             get_bloginfo('wpurl') .
@@ -928,7 +928,7 @@ function woocommerce_bitcart_init()
         return $links;
     }
 
-    function action_woocommerce_thankyou_bitcart($order_id)
+    function action_woocommerce_thankyou_rdwv($order_id)
     {
         $wc_order = wc_get_order($order_id);
 
@@ -943,21 +943,21 @@ function woocommerce_bitcart_init()
         );
         $payment_status = str_replace(
             '{$statusTitle}',
-            _x('Payment Status', 'woocommerce_bitcart'),
+            _x('Payment Status', 'woocommerce_rdwv'),
             $payment_status
         );
-        $status_description = _x('Payment processing', 'woocommerce_bitcart');
+        $status_description = _x('Payment processing', 'woocommerce_rdwv');
         echo str_replace('{$paymentStatus}', $status_description, $payment_status);
     }
     add_action(
-        "woocommerce_thankyou_bitcart",
-        'action_woocommerce_thankyou_bitcart',
+        "woocommerce_thankyou_rdwv",
+        'action_woocommerce_thankyou_rdwv',
         10,
         1
     );
 }
 
-function woocommerce_bitcart_failed_requirements()
+function woocommerce_rdwv_failed_requirements()
 {
     global $wp_version;
     global $woocommerce;
@@ -965,18 +965,18 @@ function woocommerce_bitcart_failed_requirements()
     $errors = array();
     if (extension_loaded('openssl') === false) {
         $errors[] =
-            'The Bitcart payment plugin requires the OpenSSL extension for PHP in order to function. Please contact your web server administrator for assistance.';
+            'The RDWV payment plugin requires the OpenSSL extension for PHP in order to function. Please contact your web server administrator for assistance.';
     }
     // PHP 5.4+ required
     if (true === version_compare(PHP_VERSION, '5.4.0', '<')) {
         $errors[] =
-            'Your PHP version is too old. The Bitcart payment plugin requires PHP 5.4 or higher to function. Please contact your web server administrator for assistance.';
+            'Your PHP version is too old. The RDWV payment plugin requires PHP 5.4 or higher to function. Please contact your web server administrator for assistance.';
     }
 
     // Wordpress 3.9+ required
     if (true === version_compare($wp_version, '3.9', '<')) {
         $errors[] =
-            'Your WordPress version is too old. The Bitcart payment plugin requires Wordpress 3.9 or higher to function. Please contact your web server administrator for assistance.';
+            'Your WordPress version is too old. The RDWV payment plugin requires Wordpress 3.9 or higher to function. Please contact your web server administrator for assistance.';
     }
 
     // WooCommerce required
@@ -985,7 +985,7 @@ function woocommerce_bitcart_failed_requirements()
             'The WooCommerce plugin for WordPress needs to be installed and activated. Please contact your web server administrator for assistance.';
     } elseif (true === version_compare($woocommerce->version, '2.2', '<')) {
         $errors[] =
-        'Your WooCommerce version is too old. The Bitcart payment plugin requires WooCommerce 2.2 or higher to function. Your version is ' .
+        'Your WooCommerce version is too old. The RDWV payment plugin requires WooCommerce 2.2 or higher to function. Your version is ' .
         $woocommerce->version .
             '. Please contact your web server administrator for assistance.';
     }
@@ -998,10 +998,10 @@ function woocommerce_bitcart_failed_requirements()
 }
 
 // Activating the plugin
-function woocommerce_bitcart_activate()
+function woocommerce_rdwv_activate()
 {
     // Check for Requirements
-    $failed = woocommerce_bitcart_failed_requirements();
+    $failed = woocommerce_rdwv_failed_requirements();
 
     $plugins_url = admin_url('plugins.php');
 
@@ -1010,8 +1010,8 @@ function woocommerce_bitcart_activate()
         // Deactivate any older versions that might still be present
         $plugins = get_plugins();
         update_option(
-            'woocommerce_bitcart_version',
-            constant("BITCART_VERSION")
+            'woocommerce_rdwv_version',
+            constant("RDWV_VERSION")
         );
     } else {
         // Requirements not met, return an error message

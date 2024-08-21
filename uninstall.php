@@ -1,8 +1,8 @@
 <?php
 /**
- * Bitcart for WooCommerce Uninstall
+ * RDWV for WooCommerce Uninstall
  *
- * @author         Bitcart
+ * @author         RDWV
  */
 
 // Prevents script from being called directly.
@@ -14,5 +14,5 @@ global $wpdb;
 
 // Delete options
 $wpdb->query(
-    "DELETE FROM $wpdb->options WHERE option_name LIKE 'woocommerce_bitcart%';"
+    "DELETE FROM $wpdb->options WHERE option_name LIKE 'woocommerce_rdwv%';"
 );
